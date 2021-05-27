@@ -21,4 +21,16 @@ npm install
 - To send POST request to /v1/session with body of name, phoneNumber, pinCode, forDose, ageLimit.
 - To send GET request to receive users to /v1/session
 
+# Environment Variables
+
+- PORT =
+- MONGO_URI =
+- TWILIO_ACCOUNT_SID =
+- TWILIO_ACCOUNT_AUTH =
+- TWILIO_PHONENUMBER =
+- VONAGE_APIKEY =
+- VONAGE_APISECRET =
+
+---
+
 Cool, fun, done.
