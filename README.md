@@ -6,9 +6,10 @@
 - Twilio Account
 - Vonage Account
 
-# Install everything:
+# Clone and Install everything:
 
 ```
+https://github.com/ashish1497/covid-1.0.git
 npm install
 ```
 
