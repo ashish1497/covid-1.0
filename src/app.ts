@@ -15,26 +15,25 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(morgan("dev"));
 
-const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/covid";
+const PORT = process.env.PORT;
+const MONGO_URI = process.env.MONGO_URI;
 
 //Connect DB
-mongoose.connect(
-  MONGO_URI as string,
-  {
+mongoose
+  .connect(MONGO_URI as string, {
     useNewUrlParser: true,
     useFindAndModify: false,
     useCreateIndex: true,
     useUnifiedTopology: true,
-  },
-  () => {
-    console.log("Connected to DB");
-  }
-);
+  })
+  .then(() => console.log("Connected to DB"))
+  .catch((err) => {
+    console.log(`Not connected to DB ${err}`);
+  });
 
 //Cronjob here
-cron.schedule("* * * * *", async () => {
-  console.log("Running this piece every 10th minute");
+cron.schedule("*/5 * * * *", async () => {
+  console.log("-------EVERY 5 MINUTES-------");
 
   const dumToday = new Date(Date.now());
   const dumtomorrow = new Date(new Date().setDate(new Date().getDate() + 1));
@@ -51,6 +50,7 @@ cron.schedule("* * * * *", async () => {
     .then((data) => {
       if (!data) return null;
       data.forEach(async (userFromCron) => {
+        console.log(`/* Running for ${userFromCron.name} */`);
         const resultToday = await sendCowinRequest(userFromCron.pinCode, today);
         const resultTomorrow = await sendCowinRequest(
           userFromCron.pinCode,
@@ -68,6 +68,8 @@ cron.schedule("* * * * *", async () => {
         ];
 
         if (!allData.length) return null;
+
+        console.log("condition check");
 
         if (userFromCron.forDose === 1) {
           const doseData = allData.filter((el) => {
@@ -113,6 +115,9 @@ cron.schedule("* * * * *", async () => {
             });
         } else return null;
       });
+    })
+    .catch((err) => {
+      throw new Error("Session find error!");
     });
 });
 

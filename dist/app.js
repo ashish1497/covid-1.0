@@ -75,16 +75,19 @@ var app = express_1.default();
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(morgan_1.default("dev"));
-var PORT = process.env.PORT || 5000;
-var MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/covid";
+var PORT = process.env.PORT;
+var MONGO_URI = process.env.MONGO_URI;
 //Connect DB
-mongoose_1.default.connect(MONGO_URI, {
+mongoose_1.default
+    .connect(MONGO_URI, {
     useNewUrlParser: true,
     useFindAndModify: false,
     useCreateIndex: true,
     useUnifiedTopology: true,
-}, function () {
-    console.log("Connected to DB");
+})
+    .then(function () { return console.log("Connected to DB"); })
+    .catch(function (err) {
+    console.log("Not connected to DB " + err);
 });
 //Cronjob here
 cron.schedule("* * * * *", function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -162,6 +165,9 @@ cron.schedule("* * * * *", function () { return __awaiter(void 0, void 0, void 0
                     }
                 });
             }); });
+        })
+            .catch(function (err) {
+            throw new Error("Session find error!");
         });
         return [2 /*return*/];
     });
