@@ -103,17 +103,12 @@ exports.sendCowinRequest = sendCowinRequest;
 var accountSid = process.env.TWILIO_ACCOUNT_SID;
 var authToken = process.env.TWILIO_ACCOUNT_AUTH;
 var sendSms = function (phone, message) {
-    try {
-        var client = require("twilio")(accountSid, authToken);
-        client.messages.create({
-            body: message,
-            from: process.env.TWILIO_PHONENUMBER,
-            to: phone,
-        });
-    }
-    catch (error) {
-        throw new Error("Error in sending message");
-    }
+    var client = require("twilio")(accountSid, authToken);
+    client.messages.create({
+        body: message,
+        from: process.env.TWILIO_PHONENUMBER,
+        to: phone,
+    });
 };
 exports.sendSms = sendSms;
 //Vonage Setup

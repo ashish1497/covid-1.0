@@ -1,5 +1,6 @@
 import axios from "axios";
 const Vonage = require("@vonage/server-sdk");
+import twilio = require("twilio");
 
 export const dateFormat = (date: Date) => {
   const res = new Date(date)
@@ -51,12 +52,29 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_ACCOUNT_AUTH;
 
 export const sendSms = (phone: any, message: any) => {
-  const client = require("twilio")(accountSid, authToken);
-  client.messages.create({
-    body: message,
-    from: process.env.TWILIO_PHONENUMBER,
-    to: phone,
-  });
+  if (accountSid!.length > 1 && authToken!.length > 1) {
+    const client = twilio(accountSid, authToken);
+    const promise = client.messages.create({
+      from: process.env.TWILIO_PHONENUMBER,
+      to: phone,
+      body: message,
+    });
+    promise.then((mess) => {
+      console.log("Created message using promises");
+      console.log(mess.sid);
+    });
+    promise.catch((err) => {
+      console.log("error from send SMS");
+      console.log(err);
+    });
+  } else {
+    throw Error("Tokens are invalid");
+  }
+  // client.messages.create({
+  //   body: message,
+  //   from: process.env.TWILIO_PHONENUMBER,
+  //   to: phone,
+  // });
 };
 
 //Vonage Setup
