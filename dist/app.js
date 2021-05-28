@@ -90,10 +90,10 @@ mongoose_1.default
     console.log("Not connected to DB " + err);
 });
 //Cronjob here
-cron.schedule("* * * * *", function () { return __awaiter(void 0, void 0, void 0, function () {
+cron.schedule("*/5 * * * *", function () { return __awaiter(void 0, void 0, void 0, function () {
     var dumToday, dumtomorrow, dumOvermorrow, today, tomorrow, overmorrow;
     return __generator(this, function (_a) {
-        console.log("Running this piece every 10th minute");
+        console.log("-------EVERY 5 MINUTES-------");
         dumToday = new Date(Date.now());
         dumtomorrow = new Date(new Date().setDate(new Date().getDate() + 1));
         dumOvermorrow = new Date(new Date().setDate(new Date().getDate() + 2));
@@ -111,7 +111,9 @@ cron.schedule("* * * * *", function () { return __awaiter(void 0, void 0, void 0
                 var resultToday, resultTomorrow, resultOvermorrow, allData, doseData, message, doseData, message;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0: return [4 /*yield*/, index_1.sendCowinRequest(userFromCron.pinCode, today)];
+                        case 0:
+                            console.log("/* Running for " + userFromCron.name + " */");
+                            return [4 /*yield*/, index_1.sendCowinRequest(userFromCron.pinCode, today)];
                         case 1:
                             resultToday = _a.sent();
                             return [4 /*yield*/, index_1.sendCowinRequest(userFromCron.pinCode, tomorrow)];
@@ -123,6 +125,7 @@ cron.schedule("* * * * *", function () { return __awaiter(void 0, void 0, void 0
                             allData = __spreadArray(__spreadArray(__spreadArray([], resultToday), resultTomorrow), resultOvermorrow);
                             if (!allData.length)
                                 return [2 /*return*/, null];
+                            console.log("condition check");
                             if (userFromCron.forDose === 1) {
                                 doseData = allData.filter(function (el) {
                                     return el.ageLimit === userFromCron.ageLimit && el.forDoseOne > 5;

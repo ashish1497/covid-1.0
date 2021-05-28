@@ -33,7 +33,9 @@ mongoose
 
 //Cronjob here
 cron.schedule("*/5 * * * *", async () => {
-  console.log("-------EVERY 5 MINUTES-------");
+  console.log(
+    `-------EVERY 5 MINUTES-------${new Date().toLocaleTimeString()}`
+  );
 
   const dumToday = new Date(Date.now());
   const dumtomorrow = new Date(new Date().setDate(new Date().getDate() + 1));
