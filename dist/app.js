@@ -93,7 +93,7 @@ mongoose_1.default
 cron.schedule("*/5 * * * *", function () { return __awaiter(void 0, void 0, void 0, function () {
     var dumToday, dumtomorrow, dumOvermorrow, today, tomorrow, overmorrow;
     return __generator(this, function (_a) {
-        console.log("-------EVERY 5 MINUTES-------");
+        console.log("-------EVERY 5 MINUTES-------" + new Date().toLocaleTimeString());
         dumToday = new Date(Date.now());
         dumtomorrow = new Date(new Date().setDate(new Date().getDate() + 1));
         dumOvermorrow = new Date(new Date().setDate(new Date().getDate() + 2));
