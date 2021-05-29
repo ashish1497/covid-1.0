@@ -32,9 +32,9 @@ mongoose
   });
 
 //Cronjob here
-cron.schedule("*/5 * * * *", async () => {
+cron.schedule("* * * * *", async () => {
   console.log(
-    `-------EVERY 5 MINUTES-------${new Date().toLocaleTimeString()}`
+    `-------EVERY 1 MINUTES-------${new Date().toLocaleTimeString()}`
   );
 
   const dumToday = new Date(Date.now());
@@ -80,7 +80,7 @@ cron.schedule("*/5 * * * *", async () => {
 
           if (!doseData.length) return null;
 
-          const message = `Hey ${userFromCron.name}, ${doseData[0].forDoseOne} Vaccine Slots are available for Dose ${userFromCron.forDose} on ${doseData[0].date} at ${doseData[0].where}. Go now at https://cowin.gov.in immediately. No message from now, contact Ashish.`;
+          const message = `Hey ${userFromCron.name}, ${doseData[0].forDoseOne} Vaccine Slots are available for Dose ${userFromCron.forDose} on ${doseData[0].date} at ${doseData[0].where}, ${userFromCron.pinCode}. Go now at https://cowin.gov.in immediately. No message from now, contact Ashish.`;
           sendSms(userFromCron.phoneNumber, message);
 
           Session.findByIdAndUpdate(userFromCron._id, {

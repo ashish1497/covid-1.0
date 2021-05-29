@@ -42,6 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendSms = exports.sendCowinRequest = exports.dateFormat = void 0;
 var axios_1 = __importDefault(require("axios"));
 var Vonage = require("@vonage/server-sdk");
+var twilio = require("twilio");
 var dateFormat = function (date) {
     var res = new Date(date)
         .toLocaleDateString("en-GB")
@@ -103,12 +104,30 @@ exports.sendCowinRequest = sendCowinRequest;
 var accountSid = process.env.TWILIO_ACCOUNT_SID;
 var authToken = process.env.TWILIO_ACCOUNT_AUTH;
 var sendSms = function (phone, message) {
-    var client = require("twilio")(accountSid, authToken);
-    client.messages.create({
-        body: message,
-        from: process.env.TWILIO_PHONENUMBER,
-        to: phone,
-    });
+    if (accountSid.length > 1 && authToken.length > 1) {
+        var client = twilio(accountSid, authToken);
+        var promise = client.messages.create({
+            from: process.env.TWILIO_PHONENUMBER,
+            to: phone,
+            body: message,
+        });
+        promise.then(function (mess) {
+            console.log("Created message using promises");
+            console.log(mess.sid);
+        });
+        promise.catch(function (err) {
+            console.log("error from send SMS");
+            console.log(err);
+        });
+    }
+    else {
+        throw Error("Tokens are invalid");
+    }
+    // client.messages.create({
+    //   body: message,
+    //   from: process.env.TWILIO_PHONENUMBER,
+    //   to: phone,
+    // });
 };
 exports.sendSms = sendSms;
 //Vonage Setup
