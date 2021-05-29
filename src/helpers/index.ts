@@ -1,6 +1,6 @@
 import axios from "axios";
 const Vonage = require("@vonage/server-sdk");
-import twilio = require("twilio");
+const twilio = require("twilio");
 
 export const dateFormat = (date: Date) => {
   const res = new Date(date)
@@ -59,11 +59,11 @@ export const sendSms = (phone: any, message: any) => {
       to: phone,
       body: message,
     });
-    promise.then((mess) => {
+    promise.then((mess: any) => {
       console.log("Created message using promises");
       console.log(mess.sid);
     });
-    promise.catch((err) => {
+    promise.catch((err: any) => {
       console.log("error from send SMS");
       console.log(err);
     });

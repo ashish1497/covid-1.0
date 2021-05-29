@@ -52,7 +52,9 @@ cron.schedule("* * * * *", async () => {
     .then((data) => {
       if (!data) return null;
       data.forEach(async (userFromCron) => {
-        console.log(`/* Running for ${userFromCron.name} */`);
+        console.log(
+          `/* Running for ${userFromCron.name} ${userFromCron.pinCode} */`
+        );
         const resultToday = await sendCowinRequest(userFromCron.pinCode, today);
         const resultTomorrow = await sendCowinRequest(
           userFromCron.pinCode,

@@ -132,7 +132,7 @@ cron.schedule("* * * * *", function () { return __awaiter(void 0, void 0, void 0
                                 });
                                 if (!doseData.length)
                                     return [2 /*return*/, null];
-                                message = "Hey " + userFromCron.name + ", " + doseData[0].forDoseOne + " Vaccine Slots are available for Dose " + userFromCron.forDose + " on " + doseData[0].date + " at " + doseData[0].where + ". Go now at https://cowin.gov.in immediately. No message from now, contact Ashish.";
+                                message = "Hey " + userFromCron.name + ", " + doseData[0].forDoseOne + " Vaccine Slots are available for Dose " + userFromCron.forDose + " on " + doseData[0].date + " at " + doseData[0].where + ", " + userFromCron.pinCode + ". Go now at https://cowin.gov.in immediately. No message from now, contact Ashish.";
                                 index_1.sendSms(userFromCron.phoneNumber, message);
                                 Session_1.default.findByIdAndUpdate(userFromCron._id, {
                                     $set: { activeCronJob: false },
