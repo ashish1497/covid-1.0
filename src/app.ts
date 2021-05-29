@@ -94,7 +94,7 @@ cron.schedule("* * * * *", async () => {
           ...resultFifthmorrow,
         ];
 
-        if (!allData.length) return console.log("No Data found");
+        if (!allData.length) return null;
 
         console.log(
           `condition check for ${userFromCron.name} ${userFromCron.pinCode}`
