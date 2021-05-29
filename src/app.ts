@@ -40,10 +40,18 @@ cron.schedule("* * * * *", async () => {
   const dumToday = new Date(Date.now());
   const dumtomorrow = new Date(new Date().setDate(new Date().getDate() + 1));
   const dumOvermorrow = new Date(new Date().setDate(new Date().getDate() + 2));
+  const dumThirdmorrow = new Date(new Date().setDate(new Date().getDate() + 3));
+  const dumFourthmorrow = new Date(
+    new Date().setDate(new Date().getDate() + 4)
+  );
+  const dumFifthmorrow = new Date(new Date().setDate(new Date().getDate() + 5));
 
   const today = dateFormat(dumToday);
   const tomorrow = dateFormat(dumtomorrow);
   const overmorrow = dateFormat(dumOvermorrow);
+  const thirdmorrow = dateFormat(dumThirdmorrow);
+  const fourthmorrow = dateFormat(dumFourthmorrow);
+  const fifthmorrow = dateFormat(dumFifthmorrow);
 
   // console.log(resultOvermorrow);
   Session.find({ activeCronJob: true })
@@ -64,14 +72,29 @@ cron.schedule("* * * * *", async () => {
           userFromCron.pinCode,
           overmorrow
         );
+        const resultThirdmorrow = await sendCowinRequest(
+          userFromCron.pinCode,
+          thirdmorrow
+        );
+        const resultFourthmorrow = await sendCowinRequest(
+          userFromCron.pinCode,
+          fourthmorrow
+        );
+        const resultFifthmorrow = await sendCowinRequest(
+          userFromCron.pinCode,
+          fifthmorrow
+        );
 
         const allData = [
           ...resultToday,
           ...resultTomorrow,
           ...resultOvermorrow,
+          ...resultThirdmorrow,
+          ...resultFourthmorrow,
+          ...resultFifthmorrow,
         ];
 
-        if (!allData.length) return null;
+        if (!allData.length) return console.log("No Data found");
 
         console.log(
           `condition check for ${userFromCron.name} ${userFromCron.pinCode}`
@@ -82,7 +105,7 @@ cron.schedule("* * * * *", async () => {
             return el.ageLimit === userFromCron.ageLimit && el.forDoseOne > 5;
           });
 
-          if (!doseData.length) return null;
+          if (!doseData.length) return console.log("Dose Data Null");
 
           const message = `Hey ${userFromCron.name}, ${doseData[0].forDoseOne} Vaccine Slots are available for Dose ${userFromCron.forDose} on ${doseData[0].date} at ${doseData[0].where}, ${userFromCron.pinCode}. Go now at https://cowin.gov.in immediately. No message from now, contact Ashish.`;
           sendSms(userFromCron.phoneNumber, message);
@@ -90,10 +113,10 @@ cron.schedule("* * * * *", async () => {
           Session.findByIdAndUpdate(userFromCron._id, {
             $set: { activeCronJob: false },
           })
-            .then((done) => {
+            .then(() => {
               return console.log(`${userFromCron.name} cron is now false!`);
             })
-            .catch((err) => {
+            .catch(() => {
               return console.log(
                 `${userFromCron.name} cron could not be changed!`
               );
@@ -103,7 +126,7 @@ cron.schedule("* * * * *", async () => {
             return el.ageLimit === userFromCron.ageLimit && el.forDoseTwo > 5;
           });
 
-          if (!doseData.length) return null;
+          if (!doseData.length) return console.log("Dose Data Null");
 
           const message = `Hey ${userFromCron.name}, ${doseData[0].forDoseTwo} Vaccine Slots are available for Dose ${userFromCron.forDose} on ${doseData[0].date} at ${doseData[0].where}. Go now at https://cowin.gov.in immediately. No message from now, contact Ashish.`;
           sendSms(userFromCron.phoneNumber, message);
@@ -111,10 +134,10 @@ cron.schedule("* * * * *", async () => {
           Session.findByIdAndUpdate(userFromCron._id, {
             $set: { activeCronJob: false },
           })
-            .then((done) => {
+            .then(() => {
               return console.log(`${userFromCron.name} cron is now false!`);
             })
-            .catch((err) => {
+            .catch(() => {
               return console.log(
                 `${userFromCron.name} cron could not be changed!`
               );
@@ -123,7 +146,7 @@ cron.schedule("* * * * *", async () => {
       });
     })
     .catch((err) => {
-      throw new Error("Session find error!");
+      throw new Error(`Session find error!: ${err}`);
     });
 });
 
