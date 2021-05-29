@@ -73,7 +73,9 @@ cron.schedule("* * * * *", async () => {
 
         if (!allData.length) return null;
 
-        console.log("condition check");
+        console.log(
+          `condition check for ${userFromCron.name} ${userFromCron.pinCode}`
+        );
 
         if (userFromCron.forDose === 1) {
           const doseData = allData.filter((el) => {

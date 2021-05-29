@@ -43,6 +43,7 @@ exports.sendSms = exports.sendCowinRequest = exports.dateFormat = void 0;
 var axios_1 = __importDefault(require("axios"));
 var Vonage = require("@vonage/server-sdk");
 var twilio = require("twilio");
+var config_1 = require("../config");
 var dateFormat = function (date) {
     var res = new Date(date)
         .toLocaleDateString("en-GB")
@@ -101,8 +102,8 @@ var sendCowinRequest = function (pinCode, date) { return __awaiter(void 0, void 
 }); };
 exports.sendCowinRequest = sendCowinRequest;
 //Twilio Setup
-var accountSid = process.env.TWILIO_ACCOUNT_SID;
-var authToken = process.env.TWILIO_ACCOUNT_AUTH;
+var accountSid = config_1.TWILIO_ACCOUNT_SID;
+var authToken = config_1.TWILIO_ACCOUNT_AUTH;
 var sendSms = function (phone, message) {
     if (accountSid.length > 1 && authToken.length > 1) {
         var client = twilio(accountSid, authToken);

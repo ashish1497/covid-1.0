@@ -112,7 +112,7 @@ cron.schedule("* * * * *", function () { return __awaiter(void 0, void 0, void 0
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            console.log("/* Running for " + userFromCron.name + " */");
+                            console.log("/* Running for " + userFromCron.name + " " + userFromCron.pinCode + " */");
                             return [4 /*yield*/, index_1.sendCowinRequest(userFromCron.pinCode, today)];
                         case 1:
                             resultToday = _a.sent();
@@ -125,7 +125,7 @@ cron.schedule("* * * * *", function () { return __awaiter(void 0, void 0, void 0
                             allData = __spreadArray(__spreadArray(__spreadArray([], resultToday), resultTomorrow), resultOvermorrow);
                             if (!allData.length)
                                 return [2 /*return*/, null];
-                            console.log("condition check");
+                            console.log("condition check for " + userFromCron.name + " " + userFromCron.pinCode);
                             if (userFromCron.forDose === 1) {
                                 doseData = allData.filter(function (el) {
                                     return el.ageLimit === userFromCron.ageLimit && el.forDoseOne > 5;

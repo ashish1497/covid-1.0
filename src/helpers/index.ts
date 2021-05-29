@@ -2,6 +2,8 @@ import axios from "axios";
 const Vonage = require("@vonage/server-sdk");
 const twilio = require("twilio");
 
+import { TWILIO_ACCOUNT_AUTH, TWILIO_ACCOUNT_SID } from "../config";
+
 export const dateFormat = (date: Date) => {
   const res = new Date(date)
     .toLocaleDateString("en-GB")
@@ -48,8 +50,8 @@ export const sendCowinRequest = async (pinCode: Number, date: string) => {
 };
 
 //Twilio Setup
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_ACCOUNT_AUTH;
+const accountSid = TWILIO_ACCOUNT_SID;
+const authToken = TWILIO_ACCOUNT_AUTH;
 
 export const sendSms = (phone: any, message: any) => {
   if (accountSid!.length > 1 && authToken!.length > 1) {
