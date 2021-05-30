@@ -101,7 +101,7 @@ cron.schedule("* * * * *", async () => {
 
         if (userFromCron.forDose === 1) {
           const doseData = allData.filter((el) => {
-            return el.ageLimit === userFromCron.ageLimit && el.forDoseOne > 0;
+            return el.ageLimit === userFromCron.ageLimit && el.forDoseOne > 3;
           });
 
           if (!doseData.length) return console.log("Dose Data Null");
@@ -122,7 +122,7 @@ cron.schedule("* * * * *", async () => {
             });
         } else if (userFromCron.forDose === 2) {
           const doseData = allData.filter((el) => {
-            return el.ageLimit === userFromCron.ageLimit && el.forDoseTwo > 0;
+            return el.ageLimit === userFromCron.ageLimit && el.forDoseTwo > 3;
           });
 
           if (!doseData.length) return console.log("Dose Data Null");
