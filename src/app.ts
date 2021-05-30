@@ -53,7 +53,6 @@ cron.schedule("* * * * *", async () => {
   const fourthmorrow = dateFormat(dumFourthmorrow);
   const fifthmorrow = dateFormat(dumFifthmorrow);
 
-  // console.log(resultOvermorrow);
   Session.find({ activeCronJob: true })
     .lean()
     .exec()
@@ -102,7 +101,7 @@ cron.schedule("* * * * *", async () => {
 
         if (userFromCron.forDose === 1) {
           const doseData = allData.filter((el) => {
-            return el.ageLimit === userFromCron.ageLimit && el.forDoseOne > 5;
+            return el.ageLimit === userFromCron.ageLimit && el.forDoseOne > 0;
           });
 
           if (!doseData.length) return console.log("Dose Data Null");
@@ -123,7 +122,7 @@ cron.schedule("* * * * *", async () => {
             });
         } else if (userFromCron.forDose === 2) {
           const doseData = allData.filter((el) => {
-            return el.ageLimit === userFromCron.ageLimit && el.forDoseTwo > 5;
+            return el.ageLimit === userFromCron.ageLimit && el.forDoseTwo > 0;
           });
 
           if (!doseData.length) return console.log("Dose Data Null");
