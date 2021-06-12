@@ -3,3 +3,10 @@
 config.ts
 
 /dist
+
+# Logs
+access.log
+sessions.log
+common.log
+sent.log
+twilio.log

@@ -22,7 +22,7 @@ export const postSessionController: RequestHandler = async (
   res: Response
 ) => {
   try {
-    const { name, phoneNumber, pinCode, forDose, ageLimit } = req.body;
+    const { name, phoneNumber, pinCode, forDose, ageLimit, vaccine } = req.body;
 
     const sess: ISession = new Session({
       name: name,
@@ -30,6 +30,7 @@ export const postSessionController: RequestHandler = async (
       pinCode: pinCode,
       forDose: forDose,
       ageLimit: ageLimit,
+      vaccine: vaccine,
     });
 
     sess.save((err, session) => {

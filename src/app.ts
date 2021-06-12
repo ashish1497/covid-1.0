@@ -3,17 +3,27 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import * as cron from "node-cron";
 import { config } from "dotenv";
+import fs from "fs";
+import path from "path";
 
 import { dateFormat, sendCowinRequest, sendSms } from "./helpers/index";
 import Session from "./models/Session";
+import Sent from "./models/Sent";
+import { logToFile } from "./logger";
 
 config();
+
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: "a" }
+);
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(morgan("dev"));
+app.use(morgan("combined", { stream: accessLogStream }));
 
 const PORT = process.env.PORT;
 const MONGO_URI = process.env.MONGO_URI;
@@ -26,17 +36,14 @@ mongoose
     useCreateIndex: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("Connected to DB"))
+  .then(() => logToFile(`Connected to DB`, "common.log"))
   .catch((err) => {
-    console.log(`Not connected to DB ${err}`);
+    logToFile(`Not connected to DB ${err}`, "common.log");
   });
 
-//Cronjob here
+// sendSms("Ashish", 854326, "+918240037041", "HELL");
+//Cronjob here for Covid
 cron.schedule("* * * * *", async () => {
-  console.log(
-    `-------EVERY 1 MINUTES-------${new Date().toLocaleTimeString()}`
-  );
-
   const dumToday = new Date(Date.now());
   const dumtomorrow = new Date(new Date().setDate(new Date().getDate() + 1));
   const dumOvermorrow = new Date(new Date().setDate(new Date().getDate() + 2));
@@ -59,9 +66,6 @@ cron.schedule("* * * * *", async () => {
     .then((data) => {
       if (!data) return null;
       data.forEach(async (userFromCron) => {
-        console.log(
-          `/* Running for ${userFromCron.name} ${userFromCron.pinCode} */`
-        );
         const resultToday = await sendCowinRequest(userFromCron.pinCode, today);
         const resultTomorrow = await sendCowinRequest(
           userFromCron.pinCode,
@@ -95,57 +99,136 @@ cron.schedule("* * * * *", async () => {
 
         if (!allData.length) return null;
 
-        console.log(
-          `condition check for ${userFromCron.name} ${userFromCron.pinCode}`
+        logToFile(
+          `condition check for ${userFromCron.name} ${userFromCron.pinCode}`,
+          "common.log"
         );
 
         if (userFromCron.forDose === 1) {
           const doseData = allData.filter((el) => {
-            return el.ageLimit === userFromCron.ageLimit && el.forDoseOne > 3;
+            return (
+              el.ageLimit === userFromCron.ageLimit &&
+              el.forDoseOne > 3 &&
+              el.vaccine === userFromCron.vaccine
+            );
           });
 
-          if (!doseData.length) return console.log("Dose Data Null");
+          if (!doseData.length) return;
 
-          const message = `Hey ${userFromCron.name}, ${doseData[0].forDoseOne} Vaccine Slots are available for Dose ${userFromCron.forDose} on ${doseData[0].date} at ${doseData[0].where}, ${userFromCron.pinCode}. Go now at https://cowin.gov.in immediately. No message from now, contact Ashish.`;
-          sendSms(userFromCron.phoneNumber, message);
+          const message = `Hey ${userFromCron.name}, ${doseData[0].forDoseOne} ${userFromCron.vaccine} Vaccine Slots are available for Dose ${userFromCron.forDose} on ${doseData[0].date} at ${doseData[0].where}, ${userFromCron.pinCode}. Go now at https://cowin.gov.in.`;
+          sendSms(
+            userFromCron.name,
+            userFromCron.pinCode,
+            userFromCron.phoneNumber,
+            message
+          );
 
           Session.findByIdAndUpdate(userFromCron._id, {
             $set: { activeCronJob: false },
           })
             .then(() => {
-              return console.log(`${userFromCron.name} cron is now false!`);
+              return logToFile(
+                `${userFromCron.name}-${userFromCron.pinCode} cron is now false!`,
+                "sessions.log"
+              );
             })
             .catch(() => {
-              return console.log(
-                `${userFromCron.name} cron could not be changed!`
+              return logToFile(
+                `${userFromCron.name}-${userFromCron.pinCode} cron could not be changed!`,
+                "sessions.log"
               );
             });
         } else if (userFromCron.forDose === 2) {
           const doseData = allData.filter((el) => {
-            return el.ageLimit === userFromCron.ageLimit && el.forDoseTwo > 3;
+            return (
+              el.ageLimit === userFromCron.ageLimit &&
+              el.forDoseTwo > 3 &&
+              el.vaccine === userFromCron.vaccine
+            );
           });
 
-          if (!doseData.length) return console.log("Dose Data Null");
+          if (!doseData.length) return;
 
-          const message = `Hey ${userFromCron.name}, ${doseData[0].forDoseTwo} Vaccine Slots are available for Dose ${userFromCron.forDose} on ${doseData[0].date} at ${doseData[0].where}. Go now at https://cowin.gov.in immediately. No message from now, contact Ashish.`;
-          sendSms(userFromCron.phoneNumber, message);
+          const message = `Hey ${userFromCron.name}, ${doseData[0].forDoseTwo} ${userFromCron.vaccine} Vaccine Slots are available for Dose ${userFromCron.forDose} on ${doseData[0].date} at ${doseData[0].where}, ${userFromCron.pinCode}. Go now at https://cowin.gov.in.`;
+          sendSms(
+            userFromCron.name,
+            userFromCron.pinCode,
+            userFromCron.phoneNumber,
+            message
+          );
 
           Session.findByIdAndUpdate(userFromCron._id, {
             $set: { activeCronJob: false },
           })
             .then(() => {
-              return console.log(`${userFromCron.name} cron is now false!`);
+              return logToFile(
+                `${userFromCron.name}-${userFromCron.pinCode} cron is now false!`,
+                "sessions.log"
+              );
             })
             .catch(() => {
-              return console.log(
-                `${userFromCron.name} cron could not be changed!`
+              return logToFile(
+                `${userFromCron.name}-${userFromCron.pinCode} cron could not be changed!`,
+                "sessions.log"
               );
             });
         } else return null;
       });
     })
     .catch((err) => {
-      throw new Error(`Session find error!: ${err}`);
+      return logToFile(`${err}`, "common.log");
+    });
+});
+
+//Cronjob here for Reupdating the session to be back, 30 minutes after message sent
+cron.schedule("*/15 * * * *", async () => {
+  Sent.find({ activeCronJon: true })
+    .lean()
+    .exec()
+    .then((data) => {
+      if (!data) return;
+      data.forEach(async (sentData) => {
+        const h = Date.now() - 60000 * 30; // Current time - 30 minutes
+        if (sentData.sentAt > h) {
+          return;
+        }
+
+        Session.findOneAndUpdate(
+          {
+            name: sentData.name,
+            pinCode: sentData.pinCode,
+            phoneNumber: sentData.phoneNumber,
+          },
+          { $set: { activeCronJon: true } }
+        )
+          .then(() => {
+            Sent.findOneAndUpdate(
+              { _id: sentData._id },
+              { $set: { activeCronJob: false } }
+            )
+              .then(() => {
+                return logToFile(
+                  `${sentData.name}-${sentData.pinCode} now back to work`,
+                  "sent.log"
+                );
+              })
+              .catch((err) => {
+                return logToFile(
+                  `${sentData.name}-${sentData.pinCode} db err: ${err}`,
+                  "sent.log"
+                );
+              });
+          })
+          .catch((err) => {
+            return logToFile(
+              `${sentData.name}-${sentData.pinCode} update failed: ${err}`,
+              "session.log"
+            );
+          });
+      });
+    })
+    .catch((err) => {
+      return logToFile(`Sent find error!: ${err}`, "sent.log");
     });
 });
 
@@ -160,5 +243,5 @@ app.use("*", (req: Request, res: Response) => {
 
 //Listen
 app.listen(PORT, () => {
-  console.log(`Listening to server at ${PORT}`);
+  logToFile(`Listening to server at ${PORT}`, "common.log");
 });

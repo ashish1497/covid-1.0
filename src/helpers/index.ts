@@ -2,7 +2,9 @@ import axios from "axios";
 const Vonage = require("@vonage/server-sdk");
 const twilio = require("twilio");
 
+import Sent, { ISent } from "../models/Sent";
 import { TWILIO_ACCOUNT_AUTH, TWILIO_ACCOUNT_SID } from "../config";
+import { logToFile } from "../logger";
 
 export const dateFormat = (date: Date) => {
   const res = new Date(date)
@@ -53,7 +55,12 @@ export const sendCowinRequest = async (pinCode: Number, date: string) => {
 const accountSid = TWILIO_ACCOUNT_SID;
 const authToken = TWILIO_ACCOUNT_AUTH;
 
-export const sendSms = (phone: any, message: any) => {
+export const sendSms = (
+  name: String,
+  pinCode: Number,
+  phone: String,
+  message: String
+) => {
   if (accountSid!.length > 1 && authToken!.length > 1) {
     const client = twilio(accountSid, authToken);
     const promise = client.messages.create({
@@ -62,21 +69,26 @@ export const sendSms = (phone: any, message: any) => {
       body: message,
     });
     promise.then((mess: any) => {
-      console.log("Created message using promises");
-      console.log(mess.sid);
+      const msgSent: ISent = new Sent({
+        name: name,
+        pinCode: pinCode,
+        phoneNumber: phone,
+        message: mess.body,
+      });
+      msgSent.save((err, done) => {
+        if (err) {
+          return logToFile(`Error in saving sms details: ${err} `, "sent.log");
+        }
+
+        return logToFile(`Saved to Sent Collection`, "sent.log");
+      });
     });
     promise.catch((err: any) => {
-      console.log("error from send SMS");
-      console.log(err);
+      return logToFile(`Error from send SMS: ${err}`, "twilio.log");
     });
   } else {
-    throw Error("Tokens are invalid");
+    return logToFile(`Tokens invalid`, "twilio.log");
   }
-  // client.messages.create({
-  //   body: message,
-  //   from: process.env.TWILIO_PHONENUMBER,
-  //   to: phone,
-  // });
 };
 
 //Vonage Setup

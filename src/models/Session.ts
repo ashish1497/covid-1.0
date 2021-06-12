@@ -6,6 +6,7 @@ export interface ISession extends Document {
   phoneNumber: String;
   forDose: Number;
   ageLimit: Number;
+  vaccine: String;
   activeCronJob: Boolean;
 }
 
@@ -15,6 +16,7 @@ const SessionSchema: Schema = new Schema({
   phoneNumber: { type: String, required: true },
   forDose: { type: Number, required: true },
   ageLimit: { type: Number, required: true },
+  vaccine: { type: String },
   activeCronJob: { type: Boolean, required: true, default: true },
 });
 
