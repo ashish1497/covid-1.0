@@ -99,10 +99,10 @@ cron.schedule("* * * * *", async () => {
 
         if (!allData.length) return null;
 
-        logToFile(
-          `condition check for ${userFromCron.name} ${userFromCron.pinCode}`,
-          "common.log"
-        );
+        // logToFile(
+        //   `condition check for ${userFromCron.name} ${userFromCron.pinCode}`,
+        //   "common.log"
+        // );
 
         if (userFromCron.forDose === 1) {
           const doseData = allData.filter((el) => {
