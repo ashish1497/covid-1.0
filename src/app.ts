@@ -181,8 +181,8 @@ cron.schedule("* * * * *", async () => {
 });
 
 //Cronjob here for Reupdating the session to be back, 30 minutes after message sent
-cron.schedule("*/15 * * * *", async () => {
-  Sent.find({ activeCronJon: true })
+cron.schedule("*/10 * * * *", async () => {
+  Sent.find({ activeCronJob: true })
     .lean()
     .exec()
     .then((data) => {
