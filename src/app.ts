@@ -199,7 +199,7 @@ cron.schedule("*/10 * * * *", async () => {
             pinCode: sentData.pinCode,
             phoneNumber: sentData.phoneNumber,
           },
-          { $set: { activeCronJon: true } }
+          { $set: { activeCronJob: true } }
         )
           .then(() => {
             Sent.findOneAndUpdate(
