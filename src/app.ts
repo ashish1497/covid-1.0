@@ -222,7 +222,7 @@ cron.schedule("*/30 * * * *", async () => {
           .catch((err) => {
             return logToFile(
               `${sentData.name}-${sentData.pinCode} update failed: ${err}`,
-              "session.log"
+              "sessions.log"
             );
           });
       });
